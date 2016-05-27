@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:alignmentMode="alignBounds"
+    android:columnCount="4"
+    android:columnOrderPreserved="false"
+    android:useDefaultMargins="true"
+    tools:showIn="@layout/activity_pictures"
+    tools:context="org.jos.pictureuploader.PicturesActivity"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="81dp">
+  <Space
+      android:layout_column="0"
+      android:layout_columnSpan="4"
+      android:layout_gravity="fill"
+      android:layout_row="1" />
+
+  <TextView
+    android:layout_column="0"
+    android:layout_columnSpan="4"
+    android:layout_gravity="center_horizontal"
+    android:text="New Picture Set"
+    android:textSize="32dip" />
+
+  <TextView
+    android:layout_gravity="right"
+    android:text="From the Top" />
+
+  <ImageView
+      android:id="@+id/pic_top"
+      android:layout_width="220dp"
+      android:layout_height="120dp"
+      android:layout_gravity="end"
+      android:src="@android:drawable/ic_menu_camera"
+      android:background="@color/colorPrimaryDark" />
+
+  <TextView
+    android:layout_column="0"
+    android:layout_gravity="right"
+    android:text="From the Chest:" />
+
+  <ImageView
+      android:id="@+id/pic_chest"
+      android:layout_width="220dp"
+      android:layout_height="120dp"
+      android:layout_gravity="end"
+      android:src="@android:drawable/ic_menu_camera"
+      android:background="@color/colorPrimaryDark" />
+
+  <TextView
+      android:layout_column="0"
+      android:layout_gravity="right"
+      android:text="From the Eyes:" />
+
+  <ImageView
+      android:id="@+id/pic_eyes"
+      android:layout_width="220dp"
+      android:layout_height="120dp"
+      android:layout_gravity="end"
+      android:src="@android:drawable/ic_menu_camera"
+      android:background="@color/colorPrimaryDark" />
+
+  <Space
+    android:layout_column="0"
+    android:layout_columnSpan="4"
+    android:layout_gravity="fill"
+    android:layout_row="5" />
+
+  <LinearLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_column="0"
+      android:layout_row="6"
+      android:layout_columnSpan="4">
+    <Button
+        android:text="Save and Back to the list"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content" />
+    <Button
+        android:text="Take another set"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content" />
+  </LinearLayout>
+
+
+</GridLayout>
