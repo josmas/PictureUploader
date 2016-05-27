@@ -12,6 +12,7 @@
     tools:context="org.jos.pictureuploader.PicturesActivity"
     tools:layout_editor_absoluteX="0dp"
     tools:layout_editor_absoluteY="81dp">
+
   <Space
       android:layout_column="0"
       android:layout_columnSpan="4"
@@ -23,7 +24,8 @@
     android:layout_columnSpan="4"
     android:layout_gravity="center_horizontal"
     android:text="New Picture Set"
-    android:textSize="32dip" />
+    android:textSize="42dip"
+    android:layout_row="2" />
 
   <TextView
     android:layout_gravity="right"
@@ -35,20 +37,8 @@
       android:layout_height="120dp"
       android:layout_gravity="end"
       android:src="@android:drawable/ic_menu_camera"
-      android:background="@color/colorPrimaryDark" />
-
-  <TextView
-    android:layout_column="0"
-    android:layout_gravity="right"
-    android:text="From the Chest:" />
-
-  <ImageView
-      android:id="@+id/pic_chest"
-      android:layout_width="220dp"
-      android:layout_height="120dp"
-      android:layout_gravity="end"
-      android:src="@android:drawable/ic_menu_camera"
-      android:background="@color/colorPrimaryDark" />
+      android:background="@color/colorPrimaryDark"
+      android:layout_row="3" />
 
   <TextView
       android:layout_column="0"
@@ -61,13 +51,22 @@
       android:layout_height="120dp"
       android:layout_gravity="end"
       android:src="@android:drawable/ic_menu_camera"
-      android:background="@color/colorPrimaryDark" />
+      android:background="@color/colorPrimaryDark"
+      android:layout_row="4" />
 
-  <Space
-    android:layout_column="0"
-    android:layout_columnSpan="4"
-    android:layout_gravity="fill"
-    android:layout_row="5" />
+  <TextView
+      android:layout_column="0"
+      android:layout_gravity="right"
+      android:text="From the Chest:" />
+
+  <ImageView
+      android:id="@+id/pic_chest"
+      android:layout_width="220dp"
+      android:layout_height="120dp"
+      android:layout_gravity="end"
+      android:src="@android:drawable/ic_menu_camera"
+      android:background="@color/colorPrimaryDark"
+      android:layout_row="5" />
 
   <LinearLayout
       xmlns:android="http://schemas.android.com/apk/res/android"
@@ -75,7 +74,7 @@
       android:layout_height="wrap_content"
       android:layout_column="0"
       android:layout_row="6"
-      android:layout_columnSpan="4">
+      android:layout_columnSpan="4" >
     <Button
         android:text="Save and Back to the list"
         android:layout_height="wrap_content"
