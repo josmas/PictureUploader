@@ -77,11 +77,12 @@
       android:layout_columnSpan="4" >
     <Button
         android:id="@+id/buttonBack"
-        android:text="Save and Back to the list"
+        android:text="list current files"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content" />
     <Button
-        android:text="Take another set"
+        android:id="@+id/readyToZip"
+        android:text="Set is ready"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content" />
   </LinearLayout>

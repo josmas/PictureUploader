@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PicturesActivity extends AppCompatActivity {
 
@@ -35,11 +37,11 @@ public class PicturesActivity extends AppCompatActivity {
     public int getValueType() { return valueType; }
   }
 
-  private ImageView topPic;
-  private ImageView eyesPic;
-  private ImageView chestPic;
+  private ImageView topPic, eyesPic, chestPic;
+  private Button readyToZip, back;
 
-  private String currentPhotoPath;
+  //TODO (jos) does this one need to be reset in onResume/onPause?
+  private Map<PictureTypes, File> currentNames = new HashMap<>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,7 @@ public class PicturesActivity extends AppCompatActivity {
     });
 
     //TODO (jos) listing files for now, just for debugging purposes.
-    Button back = (Button) findViewById(R.id.buttonBack);
+    back = (Button) findViewById(R.id.buttonBack);
     back.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -88,6 +90,24 @@ public class PicturesActivity extends AppCompatActivity {
         }
       }
     });
+
+    readyToZip = (Button) findViewById(R.id.readyToZip);
+    readyToZip.setEnabled(false);
+    readyToZip.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        for (PictureTypes file : currentNames.keySet()) {
+          Log.i("PUL", currentNames.get(file).getAbsolutePath());
+        }
+        readyToZip.setEnabled(false);
+        //TODO (jos) as per method names
+        // resetAllImageViewers(); //And nullify all possible bitmaps
+        // zipAllFiles(currentNames); // Send them off to the cloud if possible
+        // deleteAllOriginals(path.listFiles()); //Including any extra pictures that might have been taken
+      }
+    });
+
   }
 
 
@@ -102,7 +122,7 @@ public class PicturesActivity extends AppCompatActivity {
         ".jpg",         /* suffix */
         storageDir      /* directory */
     );
-    currentPhotoPath = image.getAbsolutePath();
+    currentNames.put(pictureType, image);
     return image;
   }
 
@@ -127,9 +147,11 @@ public class PicturesActivity extends AppCompatActivity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (resultCode == RESULT_OK) {
-      if (PictureTypes.TOP.getValueType() == requestCode) setPic(topPic);
-      else if (PictureTypes.EYES.getValueType() == requestCode) setPic(eyesPic);
-      else if (PictureTypes.CHEST.getValueType() == requestCode) setPic(chestPic);
+      if (PictureTypes.TOP.getValueType() == requestCode) setPic(topPic, PictureTypes.TOP);
+      else if (PictureTypes.EYES.getValueType() == requestCode) setPic(eyesPic, PictureTypes.EYES);
+      else if (PictureTypes.CHEST.getValueType() == requestCode) setPic(chestPic, PictureTypes.CHEST);
+
+      if (currentNames.keySet().size() == 3) readyToZip.setEnabled(true);
     }
     else {
       Toast.makeText(this, "Something went wrong with the camera. " +
@@ -142,13 +164,13 @@ public class PicturesActivity extends AppCompatActivity {
    * https://developer.android.com/training/camera/photobasics.html#TaskScalePhoto
    * @param mImageView
    */
-  private void setPic(ImageView mImageView) {
+  private void setPic(ImageView mImageView, PictureTypes pictureType) {
     int targetW = mImageView.getWidth();
     int targetH = mImageView.getHeight();
 
     BitmapFactory.Options bmOptions = new BitmapFactory.Options();
     bmOptions.inJustDecodeBounds = true;
-    BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
+    BitmapFactory.decodeFile(currentNames.get(pictureType).getAbsolutePath(), bmOptions);
     int photoW = bmOptions.outWidth;
     int photoH = bmOptions.outHeight;
 
@@ -159,7 +181,7 @@ public class PicturesActivity extends AppCompatActivity {
     bmOptions.inSampleSize = scaleFactor;
     bmOptions.inPurgeable = true;
 
-    Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
+    Bitmap bitmap = BitmapFactory.decodeFile(currentNames.get(pictureType).getAbsolutePath(), bmOptions);
     mImageView.setImageBitmap(bitmap);
   }
 
