@@ -102,14 +102,20 @@ public class PicturesActivity extends AppCompatActivity {
         }
         readyToZip.setEnabled(false);
         //TODO (jos) as per method names
-        // resetAllImageViewers(); //And nullify all possible bitmaps
+         resetAllImageViewers();
         // zipAllFiles(currentNames); // Send them off to the cloud if possible
         // deleteAllOriginals(path.listFiles()); //Including any extra pictures that might have been taken
+        // reset currentNames currentNames = new HashMap<>();
       }
     });
 
   }
 
+  private void resetAllImageViewers() {
+    topPic.setImageResource(android.R.drawable.ic_menu_camera);
+    eyesPic.setImageResource(android.R.drawable.ic_menu_camera);
+    chestPic.setImageResource(android.R.drawable.ic_menu_camera);
+  }
 
   //TODO (jos) delete these images when they are not needed anymore
   // delete and exist methods here: https://developer.android.com/reference/android/content/Context.html#getExternalFilesDir(java.lang.String)
