@@ -76,6 +76,7 @@
       android:layout_row="6"
       android:layout_columnSpan="4" >
     <Button
+        android:id="@+id/buttonBack"
         android:text="Save and Back to the list"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content" />
