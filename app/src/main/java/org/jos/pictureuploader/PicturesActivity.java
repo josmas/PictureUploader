@@ -24,9 +24,16 @@ import java.util.Date;
 
 public class PicturesActivity extends AppCompatActivity {
 
-  static final int REQUEST_TOP_PICTURE_CAPTURE = 1;
-  static final int REQUEST_EYES_PICTURE_CAPTURE = 2;
-  static final int REQUEST_CHEST_PICTURE_CAPTURE = 3;
+  private enum PictureTypes {
+
+    TOP (1), EYES (2), CHEST(3);
+
+    PictureTypes(int valueType) {
+      this.valueType = valueType;
+    }
+    private final int valueType;
+    public int getValueType() { return valueType; }
+  }
 
   private ImageView topPic;
   private ImageView eyesPic;
@@ -50,21 +57,21 @@ public class PicturesActivity extends AppCompatActivity {
     topPic.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        dispatchTakePictureIntent(REQUEST_TOP_PICTURE_CAPTURE);
+        dispatchTakePictureIntent(PictureTypes.TOP);
       }
     });
 
     eyesPic.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        dispatchTakePictureIntent(REQUEST_EYES_PICTURE_CAPTURE);
+        dispatchTakePictureIntent(PictureTypes.EYES);
       }
     });
 
     chestPic.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        dispatchTakePictureIntent(REQUEST_CHEST_PICTURE_CAPTURE);
+        dispatchTakePictureIntent(PictureTypes.CHEST);
       }
     });
 
@@ -84,11 +91,9 @@ public class PicturesActivity extends AppCompatActivity {
   }
 
 
-  //TODO (jos) pictureType should be an Enum so we can use it as an int and String
   //TODO (jos) delete these images when they are not needed anymore
   // delete and exist methods here: https://developer.android.com/reference/android/content/Context.html#getExternalFilesDir(java.lang.String)
-  private File createImageFile(String pictureType) throws IOException {
-    // Create an image file name
+  private File createImageFile(PictureTypes pictureType) throws IOException {
     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
     String imageFileName = pictureType + "_JPEG_" + timeStamp + "_";
     File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -101,37 +106,19 @@ public class PicturesActivity extends AppCompatActivity {
     return image;
   }
 
-  private void dispatchTakePictureIntent(int pictureRequested) {
+  private void dispatchTakePictureIntent(PictureTypes pictureRequested) {
     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-
-      //TODO (jos) use an Enum instead of all this madness.
-      String picType = "";
-      switch (pictureRequested) {
-        case REQUEST_TOP_PICTURE_CAPTURE:
-          picType = "TOP";
-          break;
-        case REQUEST_EYES_PICTURE_CAPTURE:
-          picType = "EYES";
-          break;
-        case REQUEST_CHEST_PICTURE_CAPTURE:
-          picType = "CHEST";
-          break;
-        default:
-          Toast.makeText(this, "Something went wrong with the pictures", Toast.LENGTH_LONG);
-          break;
-      }
-
       File photoFile = null;
       try {
-        photoFile = createImageFile(picType);
+        photoFile = createImageFile(pictureRequested);
       } catch (IOException ex) {
         Toast.makeText(this, "Pictures cannot be stored.", Toast.LENGTH_LONG);
       }
 
       if (photoFile != null) {
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-        startActivityForResult(takePictureIntent, pictureRequested);
+        startActivityForResult(takePictureIntent, pictureRequested.getValueType());
       }
 
     }
@@ -140,21 +127,11 @@ public class PicturesActivity extends AppCompatActivity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (resultCode == RESULT_OK) {
-      switch (requestCode) {
-        case REQUEST_TOP_PICTURE_CAPTURE:
-          setPic(topPic);
-          break;
-        case REQUEST_EYES_PICTURE_CAPTURE:
-          setPic(eyesPic);
-          break;
-        case REQUEST_CHEST_PICTURE_CAPTURE:
-          setPic(chestPic);
-          break;
-        default:
-          Toast.makeText(this, "Something went wrong with the pictures", Toast.LENGTH_LONG);
-          break;
-      }
-    } else {
+      if (PictureTypes.TOP.getValueType() == requestCode) setPic(topPic);
+      else if (PictureTypes.EYES.getValueType() == requestCode) setPic(eyesPic);
+      else if (PictureTypes.CHEST.getValueType() == requestCode) setPic(chestPic);
+    }
+    else {
       Toast.makeText(this, "Something went wrong with the camera. " +
           "Pictures are not available", Toast.LENGTH_LONG);
     }
