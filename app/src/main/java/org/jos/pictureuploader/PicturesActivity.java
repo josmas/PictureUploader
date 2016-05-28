@@ -17,18 +17,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class PicturesActivity extends AppCompatActivity {
 
@@ -42,8 +36,6 @@ public class PicturesActivity extends AppCompatActivity {
     private final int valueType;
     public int getValueType() { return valueType; }
   }
-
-  private static final int BUFFER_SIZE = 2048;
 
   private ImageView topPic, eyesPic, chestPic;
   private Button readyToZip, back;
@@ -109,11 +101,7 @@ public class PicturesActivity extends AppCompatActivity {
         }
         readyToZip.setEnabled(false);
          resetAllImageViewers();
-         zipAllFiles(currentNames); // Send them off to the cloud if possible, but in a service
-        //TODO (jos) as per method names
-        // deleteAllOriginals(path.listFiles()); //Including any extra pictures that might have been taken
-        // delete and exist methods here: https://developer.android.com/reference/android/content/Context.html#getExternalFilesDir(java.lang.String)
-        // reset currentNames currentNames = new HashMap<>();
+        startZippingService(currentNames);
       }
     });
 
@@ -125,61 +113,13 @@ public class PicturesActivity extends AppCompatActivity {
     chestPic.setImageResource(android.R.drawable.ic_menu_camera);
   }
 
-  /**
-   * Based in http://www.jondev.net/articles/Zipping_Files_with_Android_(Programmatically)
-   * @param currentNamesMap TODO (jos) Moving this somewhere else (like a service)
-   * @throws IOException
-   */
-  public void zipAllFiles(Map<PictureTypes, File> currentNamesMap) {
-
-    long startTime = System.nanoTime(); //TODO (jos) After having timed this, it needs a background process
-    Log.i("PUL", "STARTING TO ZIP STUFF!");
-    String[] files = { currentNamesMap.get(PictureTypes.TOP).getAbsolutePath(),
-        currentNamesMap.get(PictureTypes.EYES).getAbsolutePath(),
-        currentNamesMap.get(PictureTypes.CHEST).getAbsolutePath() };
-
-    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-    String imageFileName = timeStamp + "_ZIP_";
-    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    File zipFile;
-    ZipOutputStream out = null;
-    BufferedInputStream origin;
-    try {
-      zipFile = File.createTempFile(imageFileName, ".zip", storageDir);
-      out = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
-      byte data[] = new byte[BUFFER_SIZE];
-
-      for (int i = 0; i < files.length; i++) {
-        FileInputStream fi = new FileInputStream(files[i]);
-        origin = new BufferedInputStream(fi, BUFFER_SIZE);
-        try {
-          ZipEntry entry = new ZipEntry(files[i].substring(files[i].lastIndexOf("/") + 1));
-          out.putNextEntry(entry);
-          int count;
-          while ((count = origin.read(data, 0, BUFFER_SIZE)) != -1) {
-            out.write(data, 0, count);
-          }
-        }
-        finally {
-          origin.close();
-        }
-      }
-    }
-    catch(Exception e) {
-      Log.e("PUL", "Exceptions during zipping: " + e.getMessage()); //TODO (jos) shall retry later?
-    }
-    finally {
-      try {
-        out.close();
-      } catch (IOException e) {
-        e.printStackTrace(); //TODO (jos) catch this exception
-      }
-    }
-
-    //TODO (jos) timing, delete!
-    long endTime = System.nanoTime();
-    long duration = ((endTime - startTime) / 1000000000);
-    Log.i("PUL", "The time to zip the pictures in seconds is: " + duration);
+  private void startZippingService(Map<PictureTypes, File> currentNamesMap) {
+    Intent intent = new Intent(this, ZippingService.class);
+    String[] files = { currentNamesMap.get(PicturesActivity.PictureTypes.TOP).getAbsolutePath(),
+        currentNamesMap.get(PicturesActivity.PictureTypes.EYES).getAbsolutePath(),
+        currentNamesMap.get(PicturesActivity.PictureTypes.CHEST).getAbsolutePath() };
+    intent.putExtra(ZippingService.FILES_HASH, files);
+    startService(intent);
   }
 
   private File createImageFile(PictureTypes pictureType) throws IOException {
