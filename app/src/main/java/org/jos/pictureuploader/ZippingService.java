@@ -17,9 +17,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p> Zipping a number of files into a compressed file </p>
+ * An {@link IntentService} subclass to Zip a number of files into a compressed file
  */
 public class ZippingService extends IntentService {
 
@@ -36,6 +34,7 @@ public class ZippingService extends IntentService {
       String[] files = intent.getStringArrayExtra(FILES_HASH);
       zipAllFiles(files);
       deleteAllFiles(files);
+      // TODO (jos) Schedule UploadService (to be written) to eventually upload pictures
     }
   }
 
@@ -73,13 +72,13 @@ public class ZippingService extends IntentService {
       }
     }
     catch(Exception e) {
-      Log.e("PUL", "Exceptions during zipping: " + e.getMessage()); //TODO (jos) shall retry later?
+      Log.e("PUL", "Error creating Zip file: " + e.getMessage()); // Not much can be done
     }
     finally {
       try {
         out.close();
       } catch (IOException e) {
-        e.printStackTrace(); //TODO (jos) catch this exception
+        Log.e("PUL", "Error closing the output stream to Zip files: " + e.getMessage());
       }
     }
   }
@@ -92,7 +91,8 @@ public class ZippingService extends IntentService {
 
   void deleteExternalStoragePrivateFile(String file) {
     // If this fails and pictures do not get deleted, they will go away when uninstalling anyway
-    // because they are in the private space of the app.
+    // because they are in the private space of the app. Also some pictures will be left behind if
+    // more than one pic for a type is taken in one set.
     File path = new File(file);
     if (path != null) {
       path.delete();

@@ -39,8 +39,6 @@ public class PicturesActivity extends AppCompatActivity {
 
   private ImageView topPic, eyesPic, chestPic;
   private Button readyToZip, back;
-
-  //TODO (jos) does this one need to be reset in onResume/onPause?
   private Map<PictureTypes, File> currentNames = new HashMap<>();
 
   @Override
@@ -85,7 +83,6 @@ public class PicturesActivity extends AppCompatActivity {
         File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {
-          Log.i("PUL", file.getName());
           Log.i("PUL", file.getAbsolutePath());
         }
       }
@@ -96,15 +93,11 @@ public class PicturesActivity extends AppCompatActivity {
     readyToZip.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        for (PictureTypes file : currentNames.keySet()) {
-          Log.i("PUL", currentNames.get(file).getAbsolutePath());
-        }
         readyToZip.setEnabled(false);
-         resetAllImageViewers();
+        resetAllImageViewers();
         startZippingService(currentNames);
       }
     });
-
   }
 
   private void resetAllImageViewers() {
@@ -113,6 +106,11 @@ public class PicturesActivity extends AppCompatActivity {
     chestPic.setImageResource(android.R.drawable.ic_menu_camera);
   }
 
+  /**
+   * This is a fire and forget call to the Zipping Service. Zipped files will eventually be uploaded
+   * in a different service.
+   * @param currentNamesMap the File paths to the actual files on disk
+   */
   private void startZippingService(Map<PictureTypes, File> currentNamesMap) {
     Intent intent = new Intent(this, ZippingService.class);
     String[] files = { currentNamesMap.get(PicturesActivity.PictureTypes.TOP).getAbsolutePath(),
@@ -149,7 +147,6 @@ public class PicturesActivity extends AppCompatActivity {
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
         startActivityForResult(takePictureIntent, pictureRequested.getValueType());
       }
-
     }
   }
 
