@@ -1,6 +1,7 @@
 package org.jos.pictureuploader;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -20,9 +21,13 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import static org.jos.pictureuploader.ZippingService.PREFS_NAME;
 
 public class PicturesActivity extends AppCompatActivity {
 
@@ -80,11 +85,20 @@ public class PicturesActivity extends AppCompatActivity {
     back.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        Log.i("PUL", "--------------- Files In Private area ---------------------");
         File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {
           Log.i("PUL", file.getAbsolutePath());
         }
+        Log.i("PUL", "-----------------------------------------------------------");
+        Log.i("PUL", "--------------- Files In Shared Prefs ---------------------");
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        Set<String> filesToUpload = settings.getStringSet("filesToUpload", Collections.<String>emptySet());
+        for (String filePath : filesToUpload) {
+          Log.i("PUL", "ZIP: " + filePath);
+        }
+
       }
     });
 
