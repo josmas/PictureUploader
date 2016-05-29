@@ -104,7 +104,7 @@ public class ZippingService extends IntentService {
 
     SharedPreferences.Editor editor = settings.edit();
     editor.putStringSet("filesToUpload", filesToUpload);
-    editor.apply();
+    editor.commit(); // commit because the following operations depend on this one.
   }
 
   private void deleteAllFiles(String[] files) {
@@ -134,7 +134,7 @@ public class ZippingService extends IntentService {
         .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
         .setRequiresDeviceIdle(true)
         .setMinimumLatency(3 * 60 * 1000) // Three minutes in milliseconds
-        .setOverrideDeadline(6 * 60 * 60 * 1000 ) // Final limit of Six hours
+        .setOverrideDeadline(6 * 60 * 60 * 1000) // Final limit of Six hours
         .build();
     if (js.schedule(job) < 1) Log.e("PUL", "Job could not be scheduled");
   }

@@ -33,7 +33,8 @@ public class UploadJobService extends JobService {
       public void run() {
         Set<String> removeList =new HashSet<>();
         for (String file : filesToUpload) {
-          String result = Uploader.uploadFile(new File(file), REMOTE_URL);
+          File path = new File(file);
+          String result = Uploader.uploadFile(path, REMOTE_URL);
           if (result == null) {
             // Try again when the Job is rescheduled
             Log.i("PUL", "Upload did not finish. Will try again in next Job");
@@ -41,6 +42,9 @@ public class UploadJobService extends JobService {
           else {
             // Add the file to the remove list, as it has already been uploaded
             removeList.add(file);
+            // If this fails and pictures do not get deleted, they will go away when uninstalling anyway
+            // because they are in the private space of the app.
+            path.delete();
           }
         }
 
@@ -49,7 +53,6 @@ public class UploadJobService extends JobService {
         editor.putStringSet("filesToUpload", filesToUpload);
         editor.commit(); // It is fine to block until this is written
 
-        //TODO (jos) delete the actual files in private space - reuse the delete methods in ZippingService
         jobFinished(params, false);
 
       }
