@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/picture_sets"
-        tools:layout_editor_absoluteX="15dp"
+        tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="27dp"
         android:id="@+id/textView"
         app:layout_constraintLeft_toLeftOf="@+id/content_picture_list"
@@ -34,12 +34,27 @@
         android:layout_width="match_parent"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="51dp"
-        android:layout_height="match_parent"
+        android:layout_height="350dp"
         android:id="@+id/list"
         app:layout_constraintLeft_toLeftOf="@+id/content_picture_list"
         tools:layout_constraintLeft_creator="0"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         android:layout_marginTop="8dp"
         tools:layout_constraintTop_creator="0"/>
+
+    <Button
+        android:text="Upload all now!"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="119dp"
+        tools:layout_editor_absoluteY="309dp"
+        android:id="@+id/upload_button"
+        app:layout_constraintLeft_toLeftOf="@+id/content_picture_list"
+        tools:layout_constraintLeft_creator="0"
+        app:layout_constraintTop_toBottomOf="@+id/list"
+        android:layout_marginTop="8dp"
+        tools:layout_constraintTop_creator="0"
+        app:layout_constraintRight_toRightOf="@+id/content_picture_list"
+        tools:layout_constraintRight_creator="0"/>
 
 </android.support.constraint.ConstraintLayout>
