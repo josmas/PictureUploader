@@ -17,10 +17,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -32,7 +30,7 @@ public class ZippingService extends IntentService {
 
   static final String PREFS_NAME = "ZipFilesPrefs";
   private static final int BUFFER_SIZE = 2048;
-  public static final String FILES_HASH = "currentNames";
+  static final String FILES_HASH = "currentNames";
 
   public ZippingService() {
     super("ZippingService");
