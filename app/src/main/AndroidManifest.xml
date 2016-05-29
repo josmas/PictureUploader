@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.jos.pictureuploader">
 
+  <uses-permission android:name="android.permission.INTERNET"/>
+
   <uses-feature
       android:name="android.hardware.camera"
       android:required="true"/>
@@ -35,6 +37,11 @@
     <service
         android:name=".ZippingService"
         android:exported="false">
+    </service>
+    <service
+        android:name=".UploadJobService"
+        android:exported="false"
+        android:permission="android.permission.BIND_JOB_SERVICE">
     </service>
   </application>
 

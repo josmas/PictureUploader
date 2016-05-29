@@ -1,6 +1,10 @@
 package org.jos.pictureuploader;
 
 import android.app.IntentService;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -16,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -39,7 +44,7 @@ public class ZippingService extends IntentService {
       String[] files = intent.getStringArrayExtra(FILES_HASH);
       zipAllFiles(files);
       deleteAllFiles(files);
-      // TODO (jos) Schedule UploadService (to be written) to eventually upload pictures in sharedPrefs
+      scheduleJob();
     }
   }
 
@@ -116,5 +121,21 @@ public class ZippingService extends IntentService {
     if (path != null) {
       path.delete();
     }
+  }
+
+  public static final int MY_BACKGROUND_JOB = 0;
+  public void scheduleJob() {
+    JobScheduler js =
+        (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+    js.cancelAll(); // We only want one Service scheduled at a time
+    JobInfo job = new JobInfo.Builder(
+        MY_BACKGROUND_JOB,
+        new ComponentName(this, UploadJobService.class))
+        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+        .setRequiresDeviceIdle(true)
+        .setMinimumLatency(3 * 60 * 1000) // Three minutes in milliseconds
+        .setOverrideDeadline(6 * 60 * 60 * 1000 ) // Final limit of Six hours
+        .build();
+    if (js.schedule(job) < 1) Log.e("PUL", "Job could not be scheduled");
   }
 }
