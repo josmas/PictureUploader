@@ -13,12 +13,15 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import java.io.File;
 
 public class PictureListActivity extends AppCompatActivity {
 
-  ListView listView;
+  private ListView listView;
+  Button uploadNow;
+  private ProgressBar progress;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -37,21 +40,27 @@ public class PictureListActivity extends AppCompatActivity {
     });
 
     listView = (ListView) findViewById(R.id.list);
-    Button uploadNow = (Button) findViewById(R.id.upload_button);
+    progress = (ProgressBar) findViewById(R.id.progressBarUpload);
+    progress.setVisibility(View.GONE);
+    uploadNow = (Button) findViewById(R.id.upload_button);
     uploadNow.setVisibility(View.GONE);
-
-    //TODO (jos) the following code would benefit from an AsyncTask and a loading gif.
-    // At this stage it is safe to delete any CHEST_EYES_TOP picture hanging around
-    File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    File[] listOfFiles = path.listFiles();
-    for (File file : listOfFiles) {
-      if (file.getName().contains("CHEST") ||
-          file.getName().contains("EYE") ||
-          file.getName().contains("TOP")) {
-        file.delete();
+    uploadNow.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        uploadFilesNow();
       }
-    }
-    listOfFiles = path.listFiles(); // With the other files deleted - these are files still to send.
+    });
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    deleteLeftOverFiles();
+    setAdapter();
+  }
+
+  private void setAdapter() {
+    File[] listOfFiles = getExternalFilesDir(Environment.DIRECTORY_PICTURES).listFiles();
     int arrayLength = 1; // At least one spot for the 'no items scheduled...' bit.
     if (listOfFiles.length > 0) {
       arrayLength = listOfFiles.length;
@@ -65,17 +74,69 @@ public class PictureListActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
         android.R.layout.simple_list_item_1, android.R.id.text1, values);
     listView.setAdapter(adapter);
-    uploadNow.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        uploadFilesNow();
+  }
+
+  private void deleteLeftOverFiles() {
+    //TODO (jos) the following code would benefit from an AsyncTask or Handler.
+    // At this stage it is safe to delete any CHEST_EYES_TOP picture hanging around
+    File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    File[] listOfFiles = path.listFiles();
+    for (File file : listOfFiles) {
+      if (file.getName().contains("CHEST") ||
+          file.getName().contains("EYE") ||
+          file.getName().contains("TOP")) {
+        file.delete();
       }
-    });
+    }
   }
 
   private void uploadFilesNow() {
-    //TODO (jos) implement upload in a task
-    Log.i("PUL", "Implement upload in a thread or asyncTask - can I get a callback with AsyncTask?");
+    uploadNow.setVisibility(View.GONE);
+    progress.setVisibility(View.VISIBLE);
+    final int numberOfFiles = 4; //TODO (jos) Read from Shared Prefs
+    final int increment = 100 / numberOfFiles;
+    Runnable runnable = new Runnable() {
+      @Override
+      public void run() {
+        for (int i = 0; i <= numberOfFiles; i++) {
+          final int value = i;
+          doFakeWork(); // This one has to block
+          progress.post(new Runnable() { // Using a handler in the View object
+            @Override
+            public void run() {
+              progress.setProgress(value * increment);
+            }
+          });
+        }
+        Log.i("PUL", "Now it's done uploading files");
+        resetAdapter();
+      }
+    };
+    new Thread(runnable).start();
+  }
+
+  // TODO (jos) DELETE ME!!! This will call the actual uploads for files.
+  private void doFakeWork() {
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void resetAdapter() {
+    String[] values = new String[1];
+    values[0] = "No items scheduled for upload.";
+    final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+        android.R.layout.simple_list_item_1, android.R.id.text1, values);
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        progress.setProgress(0);
+        progress.setVisibility(View.GONE);
+        listView.setAdapter(adapter);
+      }
+    });
   }
 
   @Override
