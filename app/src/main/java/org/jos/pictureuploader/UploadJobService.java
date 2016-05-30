@@ -19,7 +19,7 @@ import static org.jos.pictureuploader.ZippingService.PREFS_NAME;
  */
 public class UploadJobService extends JobService {
   //TODO (jos) extract this into a settings screen
-  private static final String REMOTE_URL = "http://52.35.33.152:8080/submit";
+  static final String REMOTE_URL = "http://52.35.33.152:8080/submit";
 
   @Override
   public boolean onStartJob(final JobParameters params) {

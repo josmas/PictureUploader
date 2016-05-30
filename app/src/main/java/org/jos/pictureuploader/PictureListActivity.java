@@ -1,6 +1,9 @@
 package org.jos.pictureuploader;
 
+import android.app.job.JobScheduler;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
@@ -14,14 +17,21 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.jos.pictureuploader.UploadJobService.REMOTE_URL;
+import static org.jos.pictureuploader.ZippingService.PREFS_NAME;
 
 public class PictureListActivity extends AppCompatActivity {
 
   private ListView listView;
-  Button uploadNow;
+  private Button uploadNow;
   private ProgressBar progress;
+  private TextView uploadNote;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +50,8 @@ public class PictureListActivity extends AppCompatActivity {
     });
 
     listView = (ListView) findViewById(R.id.list);
+    uploadNote = (TextView) findViewById(R.id.upload_note);
+    uploadNote.setVisibility(View.GONE);
     progress = (ProgressBar) findViewById(R.id.progressBarUpload);
     progress.setVisibility(View.GONE);
     uploadNow = (Button) findViewById(R.id.upload_button);
@@ -65,6 +77,7 @@ public class PictureListActivity extends AppCompatActivity {
     if (listOfFiles.length > 0) {
       arrayLength = listOfFiles.length;
       uploadNow.setVisibility(View.VISIBLE);
+      uploadNote.setVisibility(View.VISIBLE);
     }
     String[] values = new String[arrayLength];
     values[0] = "No items scheduled for upload.";
@@ -93,35 +106,53 @@ public class PictureListActivity extends AppCompatActivity {
   private void uploadFilesNow() {
     uploadNow.setVisibility(View.GONE);
     progress.setVisibility(View.VISIBLE);
-    final int numberOfFiles = 4; //TODO (jos) Read from Shared Prefs
+    File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    final File[] listOfFiles = path.listFiles();
+
+    if (listOfFiles.length == 0) {
+      // This should never be the case, because if there are no files, the button is inactive.
+      resetAdapter();
+      return;
+    }
+
+    final int numberOfFiles = listOfFiles.length;
     final int increment = 100 / numberOfFiles;
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        for (int i = 0; i <= numberOfFiles; i++) {
-          final int value = i;
-          doFakeWork(); // This one has to block
-          progress.post(new Runnable() { // Using a handler in the View object
-            @Override
-            public void run() {
-              progress.setProgress(value * increment);
-            }
-          });
+        for (int i = 0; i < listOfFiles.length; i++) {
+          final int times = i;
+          File path = listOfFiles[i];
+          String result = Uploader.uploadFile(path, REMOTE_URL);
+          if (result == null) {
+            // Try again when the Job is rescheduled or the button is pressed again
+            Log.i("PUL", "Upload did not finish in main activity. Will try again in next Job");
+          }
+          else {
+            // If this fails and pictures do not get deleted, they will go away when uninstalling anyway
+            // because they are in the private space of the app.
+            path.delete();
+            progress.post(new Runnable() { // Using a handler in the View object
+              @Override
+              public void run() {
+                progress.setProgress(times * increment);
+              }
+            });
+          }
         }
-        Log.i("PUL", "Now it's done uploading files");
+
+        final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        final Set<String> filesToUpload = new HashSet<>();
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putStringSet("filesToUpload", filesToUpload);
+        editor.commit(); // It is fine to block until this is written
+        JobScheduler js = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        js.cancelAll();
+
         resetAdapter();
       }
     };
     new Thread(runnable).start();
-  }
-
-  // TODO (jos) DELETE ME!!! This will call the actual uploads for files.
-  private void doFakeWork() {
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
   }
 
   private void resetAdapter() {
@@ -134,6 +165,7 @@ public class PictureListActivity extends AppCompatActivity {
       public void run() {
         progress.setProgress(0);
         progress.setVisibility(View.GONE);
+        uploadNote.setVisibility(View.GONE);
         listView.setAdapter(adapter);
       }
     });
