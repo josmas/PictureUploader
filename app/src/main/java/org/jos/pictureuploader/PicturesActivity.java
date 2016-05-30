@@ -45,6 +45,7 @@ public class PicturesActivity extends AppCompatActivity {
   private ImageView topPic, eyesPic, chestPic;
   private Button readyToZip, back;
   private Map<PictureTypes, File> currentNames = new HashMap<>();
+  private int[] currentNumberOfPpictures = {0, 0, 0};
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +111,9 @@ public class PicturesActivity extends AppCompatActivity {
       @Override
       public void onClick(View v) {
         readyToZip.setEnabled(false);
+        currentNumberOfPpictures[0] = 0;
+        currentNumberOfPpictures[1] = 0;
+        currentNumberOfPpictures[2] = 0;
         resetAllImageViewers();
         startZippingService(currentNames);
       }
@@ -169,16 +173,32 @@ public class PicturesActivity extends AppCompatActivity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (resultCode == RESULT_OK) {
-      if (PictureTypes.TOP.getValueType() == requestCode) setPic(topPic, PictureTypes.TOP);
-      else if (PictureTypes.EYES.getValueType() == requestCode) setPic(eyesPic, PictureTypes.EYES);
-      else if (PictureTypes.CHEST.getValueType() == requestCode) setPic(chestPic, PictureTypes.CHEST);
+      if (PictureTypes.TOP.getValueType() == requestCode) {
+        currentNumberOfPpictures[0] = 1;
+        setPic(topPic, PictureTypes.TOP);
+      }
+      else if (PictureTypes.EYES.getValueType() == requestCode) {
+        currentNumberOfPpictures[1] = 1;
+        setPic(eyesPic, PictureTypes.EYES);
+      }
+      else if (PictureTypes.CHEST.getValueType() == requestCode) {
+        currentNumberOfPpictures[2] = 1;
+        setPic(chestPic, PictureTypes.CHEST);
+      }
 
-      if (currentNames.keySet().size() == 3) readyToZip.setEnabled(true);
+      if (allPicsAvailable()) readyToZip.setEnabled(true);
     }
     else {
       Toast.makeText(this, "Something went wrong with the camera. " +
           "Pictures are not available", Toast.LENGTH_LONG);
     }
+  }
+
+  private boolean allPicsAvailable() {
+    for (int picNum : currentNumberOfPpictures) {
+      if (picNum == 0) return false;
+    }
+    return true;
   }
 
   /**
