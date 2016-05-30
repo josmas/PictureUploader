@@ -88,8 +88,10 @@ public class PicturesActivity extends AppCompatActivity {
         Log.i("PUL", "--------------- Files In Private area ---------------------");
         File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File[] listOfFiles = path.listFiles();
-        for (File file : listOfFiles) {
-          Log.i("PUL", file.getAbsolutePath());
+        if (listOfFiles != null) {
+          for (File file : listOfFiles) {
+            Log.i("PUL", file.getAbsolutePath());
+          }
         }
         Log.i("PUL", "-----------------------------------------------------------");
         Log.i("PUL", "--------------- Files In Shared Prefs ---------------------");

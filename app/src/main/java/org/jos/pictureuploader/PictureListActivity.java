@@ -72,18 +72,23 @@ public class PictureListActivity extends AppCompatActivity {
   }
 
   private void setAdapter() {
+    String[] values;
     File[] listOfFiles = getExternalFilesDir(Environment.DIRECTORY_PICTURES).listFiles();
     int arrayLength = 1; // At least one spot for the 'no items scheduled...' bit.
-    if (listOfFiles.length > 0) {
+    if (listOfFiles != null && listOfFiles.length > 0) {
       arrayLength = listOfFiles.length;
       uploadNow.setVisibility(View.VISIBLE);
       uploadNote.setVisibility(View.VISIBLE);
+      values = new String[arrayLength];
+      for (int i = 0; i < listOfFiles.length; i++) {
+        values[i] = listOfFiles[i].getName();
+      }
     }
-    String[] values = new String[arrayLength];
-    values[0] = "No items scheduled for upload.";
-    for (int i = 0; i < listOfFiles.length; i++) {
-      values[i] = listOfFiles[i].getName();
+    else {
+      values = new String[arrayLength];
+      values[0] = "No items scheduled for upload.";
     }
+
     ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
         android.R.layout.simple_list_item_1, android.R.id.text1, values);
     listView.setAdapter(adapter);
@@ -94,11 +99,13 @@ public class PictureListActivity extends AppCompatActivity {
     // At this stage it is safe to delete any CHEST_EYES_TOP picture hanging around
     File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     File[] listOfFiles = path.listFiles();
-    for (File file : listOfFiles) {
-      if (file.getName().contains("CHEST") ||
-          file.getName().contains("EYE") ||
-          file.getName().contains("TOP")) {
-        file.delete();
+    if (listOfFiles != null) {
+      for (File file : listOfFiles) {
+        if (file.getName().contains("CHEST") ||
+            file.getName().contains("EYE") ||
+            file.getName().contains("TOP")) {
+          file.delete();
+        }
       }
     }
   }
@@ -109,7 +116,7 @@ public class PictureListActivity extends AppCompatActivity {
     File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     final File[] listOfFiles = path.listFiles();
 
-    if (listOfFiles.length == 0) {
+    if (listOfFiles == null || listOfFiles.length == 0) {
       // This should never be the case, because if there are no files, the button is inactive.
       resetAdapter();
       return;
