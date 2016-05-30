@@ -3,4 +3,6 @@
   <string name="action_settings">Settings</string>
   <string name="picture_sets">Picture sets enqueued for upload</string>
   <string name="title_activity_pictures">New Set</string>
+  <string name="upload_all_now">Upload all now!</string>
+  <string name="upload_note">Note: you should not need to send files manually, but if you want to do so, click on!</string>
 </resources>

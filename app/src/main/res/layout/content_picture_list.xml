@@ -17,44 +17,62 @@
         android:layout_height="wrap_content"
         android:text="@string/picture_sets"
         tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="27dp"
+        tools:layout_editor_absoluteY="17dp"
         android:id="@+id/textView"
+        android:textAppearance="@android:style/TextAppearance.Material.Large"
         app:layout_constraintLeft_toLeftOf="@+id/content_picture_list"
-        tools:layout_constraintLeft_creator="0"
-        app:layout_constraintTop_toTopOf="@+id/content_picture_list"
-        tools:layout_constraintTop_creator="0"
-        app:layout_constraintRight_toRightOf="@+id/content_picture_list"
-        tools:layout_constraintRight_creator="0"
-        app:layout_constraintBottom_toBottomOf="@+id/content_picture_list"
-        tools:layout_constraintBottom_creator="0"
-        app:layout_constraintHorizontal_bias="0.05"
-        app:layout_constraintVertical_bias="0.05"/>
+        android:layout_marginStart="8dp"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/list"
+        android:layout_marginBottom="7dp"
+        tools:layout_constraintBottom_creator="1"/>
 
-    <ListView
-        android:layout_width="match_parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="51dp"
-        android:layout_height="350dp"
-        android:id="@+id/list"
+    <TextView
+        android:text="@string/upload_note"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="308dp"
+        android:id="@+id/textView2"
+        android:textAppearance="@android:style/TextAppearance.Material.Large"
         app:layout_constraintLeft_toLeftOf="@+id/content_picture_list"
-        tools:layout_constraintLeft_creator="0"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        android:layout_marginTop="8dp"
-        tools:layout_constraintTop_creator="0"/>
-
-    <Button
-        android:text="Upload all now!"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="119dp"
-        tools:layout_editor_absoluteY="309dp"
-        android:id="@+id/upload_button"
-        app:layout_constraintLeft_toLeftOf="@+id/content_picture_list"
-        tools:layout_constraintLeft_creator="0"
+        android:layout_marginStart="16dp"
+        tools:layout_constraintLeft_creator="1"
         app:layout_constraintTop_toBottomOf="@+id/list"
         android:layout_marginTop="8dp"
-        tools:layout_constraintTop_creator="0"
+        tools:layout_constraintTop_creator="1"
         app:layout_constraintRight_toRightOf="@+id/content_picture_list"
-        tools:layout_constraintRight_creator="0"/>
+        android:layout_marginEnd="16dp"
+        tools:layout_constraintRight_creator="1"/>
+
+    <Button
+        android:text="@string/upload_all_now"
+        android:layout_width="138dp"
+        android:layout_height="60dp"
+        tools:layout_editor_absoluteX="123dp"
+        tools:layout_editor_absoluteY="396dp"
+        android:id="@+id/upload_button"
+        app:layout_constraintLeft_toLeftOf="@+id/content_picture_list"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        android:layout_marginTop="8dp"
+        tools:layout_constraintTop_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/content_picture_list"
+        tools:layout_constraintRight_creator="1"/>
+
+    <ListView
+        android:layout_width="0dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="50dp"
+        android:layout_height="250dp"
+        android:id="@+id/list"
+        app:layout_constraintLeft_toLeftOf="@+id/content_picture_list"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintTop_toTopOf="@+id/content_picture_list"
+        android:layout_marginTop="50dp"
+        tools:layout_constraintTop_creator="1"
+        app:layout_constraintRight_toRightOf="@+id/content_picture_list"
+        tools:layout_constraintRight_creator="1"/>
+
 
 </android.support.constraint.ConstraintLayout>
