@@ -83,6 +83,7 @@ public class PicturesActivity extends AppCompatActivity {
 
     //TODO (jos) listing files for now, just for debugging purposes.
     back = (Button) findViewById(R.id.buttonBack);
+    back.setVisibility(View.GONE); // hiding this for now
     back.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {

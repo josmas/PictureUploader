@@ -112,6 +112,7 @@ public class PictureListActivity extends AppCompatActivity {
 
   private void uploadFilesNow() {
     uploadNow.setVisibility(View.GONE);
+    uploadNote.setText("Upload in Progress. Please Wait...");
     progress.setVisibility(View.VISIBLE);
     File path = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     final File[] listOfFiles = path.listFiles();
